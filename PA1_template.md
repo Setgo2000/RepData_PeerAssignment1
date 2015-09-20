@@ -1,12 +1,6 @@
----
-title: "Descriptive analysis of daily activity"
-author: "HLiu"
-date: "Sunday, September 20, 2015"
-output:
-  html_document:
-    keep_md: yes
-    toc: yes
----
+# Descriptive analysis of daily activity
+HLiu  
+Sunday, September 20, 2015  
 
 
 ## Introduction
@@ -56,20 +50,27 @@ dataset.
 
 **1. Loading and preprocessing the data**  
 
-```{r,echo=TRUE}
+
+```r
 setwd("C:/LiuH/Couresa_R/repdata-data-activity")
 #chol <- read.table(url("http://assets.datacamp.com/blog_assets/chol.txt"), 
 #                         header = TRUE)
 activity <- read.csv("activity.csv")
 names(activity)
+```
+
+```
+## [1] "steps"    "date"     "interval"
+```
+
+```r
 activity2<-subset(activity,activity$steps != 'NA')
-
-
 ```
 
 **2. What is mean total number of steps taken per day?**  
 
-```{r,echo=TRUE}
+
+```r
 library(plyr)
 sum<-ddply(activity2,.(date),summarize,tot=sum(steps))
 
@@ -78,41 +79,61 @@ library(ggplot2)
 ggplot(sum, aes(x=date,y=tot,fill=date),main='Histogram of the total number of      steps taken each day') +
       geom_histogram(stat='identity',binwidth=2) +
       theme(axis.text.x = element_text(angle= -90, vjust=0.5, hjust=1, colour                           ="black"))
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
+```r
 sum$ID = 'SID001'
 ddply(sum,.(ID),summarize,'mean' = mean(tot),'median' = median(tot),'sd'=sd(tot))
+```
 
-
+```
+##       ID     mean median      sd
+## 1 SID001 10766.19  10765 4269.18
 ```
   
   
 **3. What is the average daily activity pattern?**  
 
-```{r,echo=TRUE}
+
+```r
 df<-ddply(activity2,.(interval),summarize,'mean' = mean(steps))
 
 
 library(caTools)
-activity2$stepsMMean<- runmean(activity2$steps,nrow(activity2)，align='right')
+activity2$stepsMMean<- runmean(activity2$steps,nrow(activity2),align='right')
 
 plot(df$mean,df$interal,type="l",ylab='Mean number of steps',xlab='Interval')
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
+```r
 #Interval which contains the maximum mean number of step
 df[df$mean==max(df$mean),]
+```
 
-
-
+```
+##     interval     mean
+## 104      835 206.1698
 ```
 
   
   
 **4. Imputing missing values**  
 
-```{r,echo=TRUE}
 
+```r
 ##Calculate the total number of rows with 'NA'
 nrow(activity[activity$steps=='NA',])
+```
 
+```
+## [1] 2304
+```
+
+```r
 ##Filling in missings with the median steps of the day
 
 impute.median <- function(x) replace(x, is.na(x), median(x, na.rm = TRUE))
@@ -125,18 +146,26 @@ sum2<-ddply(activity3,.(date),summarize,tot=sum(steps))
 ggplot(sum2, aes(x=date,y=tot,fill=date),main='Histogram of the total number of      steps taken each day') +
       geom_histogram(stat='identity',binwidth=2) +
       theme(axis.text.x = element_text(angle= -90, vjust=0.5, hjust=1, colour                           ="black"))
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+
+```r
 ###The mean and median total number of steps taken per day after imputing
 sum2$ID = 'SID001'
 ddply(sum2,.(ID),summarize,'mean' = mean(tot),'median' = median(tot),'sd'=sd(tot))
+```
 
-
+```
+##       ID     mean median      sd
+## 1 SID001 10766.19  10765 4269.18
 ```
   
     
 **5. Are there differences in activity patterns between weekdays and weekends?**   
 
-```{r,echo=TRUE}
+
+```r
 activity3$dayType<- ifelse(weekdays(as.Date(activity3$date))=='Sunday'|weekdays(as.Date(activity3$date))=='Saturday','Weekend','Weekday')
 
 activity3.we=activity3[activity3$dayType == 'Weekday',]
@@ -155,7 +184,8 @@ ggplot(activity4, aes(x = interval, y = mean,group=dayType)) +
   ylab("Mean of number of steps") +
   xlab("Interval") +
   facet_wrap( ~ dayType,ncol=1)
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
 
 
