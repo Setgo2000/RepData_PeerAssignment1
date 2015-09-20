@@ -90,14 +90,16 @@ ddply(sum,.(ID),summarize,'mean' = mean(tot),'median' = median(tot),'sd'=sd(tot)
 **3. What is the average daily activity pattern?**  
 
 ```{r,echo=TRUE}
+df<-ddply(activity2,.(interval),summarize,'mean' = mean(steps))
+
 
 library(caTools)
 activity2$stepsMMean<- runmean(activity2$steps,nrow(activity2)，align='right')
-#ggplot(activity2,aes(x=interval,y=stepsMMean)) +
-#      geom_line()
-plot(activity2$stepsMMean,activity2$interal,type="l",ylab='Steps',xlab='Interval')
 
-activity2[activity2$stepsMMean==max(activity2$stepsMMean),]
+plot(df$mean,df$interal,type="l",ylab='Mean number of steps',xlab='Interval')
+
+df[df$mean==max(df$mean),]
+#Interval which contains the maximum mean number of step
 
 
 ```
@@ -113,8 +115,8 @@ nrow(activity[activity$steps=='NA',])
 
 ##Filling in missings with the median steps of the day
 
-impute.mean <- function(x) replace(x, is.na(x), median(x, na.rm = TRUE))
-activity3 <- ddply(na.omit(activity), ~ date, transform, steps = impute.mean(steps))
+impute.median <- function(x) replace(x, is.na(x), median(x, na.rm = TRUE))
+activity3 <- ddply(na.omit(activity), ~ date, transform, steps = impute.median(steps))
 
 
 sum2<-ddply(activity3,.(date),summarize,tot=sum(steps))
@@ -139,13 +141,21 @@ activity3$dayType<- ifelse(weekdays(as.Date(activity3$date))=='Sunday'|weekdays(
 
 activity3.we=activity3[activity3$dayType == 'Weekday',]
 activity3.wd=activity3[activity3$dayType == 'Weekend',]
-activity3.we$stepsMMean<- runmean(activity3.we$steps,nrow(activity3.we)，align='right')
-activity3.wd$stepsMMean<- runmean(activity3.wd$steps,nrow(activity3.wd)，align='right')
+df.we<-ddply(activity3.we,.(interval),summarize,'mean' = mean(steps),dayType=
+                 'Weekday')
+df.wd<-ddply(activity3.wd,.(interval),summarize,'mean' = mean(steps),dayType=
+                 'Weekend')
 
-activity3<-rbind(activity3.we,activity3.wd)
 
-par(mfrow=c(2,1)) 
-plot(activity3.wd$stepsMMean,activity3.wd$interal,type="l",ylab='Number of steps',xlab='Interval',col='blue',main='Weekend')
-plot(activity3.we$stepsMMean,activity3.we$interal,type="l",ylab='Number of steps',xlab='Interval',col='blue',main='Weekday')
+activity4<-rbind(df.we,df.wd)
+
+
+ggplot(activity4, aes(x = interval, y = mean,group=dayType)) +
+  geom_line(linetype='solid',size=0.1) +
+  ylab("Mean of number of steps") +
+  xlab("Interval") +
+  facet_wrap( ~ dayType,ncol=1)
+
+ 
 
 ```
