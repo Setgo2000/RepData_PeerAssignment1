@@ -58,8 +58,6 @@ dataset.
 
 ```{r,echo=TRUE}
 setwd("C:/LiuH/Couresa_R/repdata-data-activity")
-#chol <- read.table(url("http://assets.datacamp.com/blog_assets/chol.txt"), 
-#                         header = TRUE)
 activity <- read.csv("activity.csv")
 names(activity)
 activity2<-subset(activity,activity$steps != 'NA')
@@ -146,9 +144,7 @@ df.we<-ddply(activity3.we,.(interval),summarize,'mean' = mean(steps),dayType=
 df.wd<-ddply(activity3.wd,.(interval),summarize,'mean' = mean(steps),dayType=
                  'Weekend')
 
-
 activity4<-rbind(df.we,df.wd)
-
 
 ggplot(activity4, aes(x = interval, y = mean,group=dayType)) +
   geom_line(linetype='solid',size=0.5) +
