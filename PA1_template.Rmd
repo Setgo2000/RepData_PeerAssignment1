@@ -1,5 +1,5 @@
 ---
-title: "PA1_template"
+title: "Descriptive analysis of daily activity"
 author: "HLiu"
 date: "Sunday, September 20, 2015"
 output: html_document
@@ -98,8 +98,9 @@ activity2$stepsMMean<- runmean(activity2$steps,nrow(activity2)，align='right')
 
 plot(df$mean,df$interal,type="l",ylab='Mean number of steps',xlab='Interval')
 
-df[df$mean==max(df$mean),]
 #Interval which contains the maximum mean number of step
+df[df$mean==max(df$mean),]
+
 
 
 ```
