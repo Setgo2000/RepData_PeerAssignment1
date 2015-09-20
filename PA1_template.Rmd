@@ -151,7 +151,7 @@ activity4<-rbind(df.we,df.wd)
 
 
 ggplot(activity4, aes(x = interval, y = mean,group=dayType)) +
-  geom_line(linetype='solid',size=0.1) +
+  geom_line(linetype='solid',size=0.5) +
   ylab("Mean of number of steps") +
   xlab("Interval") +
   facet_wrap( ~ dayType,ncol=1)
